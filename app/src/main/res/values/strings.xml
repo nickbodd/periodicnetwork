@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Periodic Network</string>
+    <string name="action_settings">Settings</string>
+    <string name="repeating_text">Turn Network ON every: </string>
+    <string name="alive_text">Keep it turned on for: </string>
+    <string name="welcome_text">Schedule your network to turn on and off periodically</string>
+    <string name="store_settings">Start Schedule</string>
+    <string name="release_settings">Stop Schedule</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="REPEAT_TIME_NAME">REPEAT_TIME</string>
+    <string name="ACTIVE_TIME_NAME">ACTIVE_TIME</string>
+
+</resources>

@@ -1,0 +1,90 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/scroll_view"
+        android:layout_gravity="top">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="top"
+            android:id="@+id/linear_layout">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAllCaps="true"
+                android:id="@+id/welcome_text"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_gravity="center_horizontal"
+                android:text="@string/welcome_text"
+                android:padding="@dimen/activity_vertical_margin"
+                android:gravity="center" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/repeating_text"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/repeating_text"
+                android:layout_gravity="center_horizontal"
+                android:padding="@dimen/activity_vertical_margin"
+                android:textAllCaps="true"/>
+
+            <Spinner
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/repeatTimeSpinner"
+                android:layout_gravity="center_horizontal"
+                android:padding="@dimen/activity_vertical_margin"
+                android:gravity="center_horizontal"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/alive_text"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="@string/alive_text"
+                android:layout_gravity="center_horizontal"
+                android:padding="@dimen/activity_vertical_margin"
+                android:textAllCaps="true"/>
+
+            <Spinner
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/activeTimeSpinner"
+                android:layout_gravity="center_horizontal"
+                android:padding="@dimen/activity_vertical_margin"
+                android:gravity="center_horizontal"/>
+            />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/store_settings"
+                android:id="@+id/store_button"
+                android:textAllCaps="true"
+                android:layout_gravity="center_horizontal"
+                android:padding="@dimen/activity_vertical_margin"
+                android:gravity="center_horizontal"/>
+            />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/release_settings"
+                android:id="@+id/release_button"
+                android:textAllCaps="true"
+                android:layout_gravity="center_horizontal"
+                android:padding="@dimen/activity_vertical_margin"
+                android:gravity="center_horizontal"/>
+            />
+        </LinearLayout>
+    </ScrollView>
+</FrameLayout>
