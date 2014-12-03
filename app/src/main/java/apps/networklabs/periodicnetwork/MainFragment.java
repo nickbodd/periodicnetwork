@@ -111,20 +111,26 @@ public class MainFragment extends Fragment {
             public void onClick(View view) {
                 Log.d(LOG_TAG, "Clicked Store Button, starting service..");
                 //startService
-                String verbose = "WiFi will Toggle every " + REPEAT_TIMES[mRepeatSpinner.getSelectedItemPosition()] +
-                        " for " + ACTIVE_TIMES[mActiveSpinner.getSelectedItemPosition()];
-                Toast.makeText(getActivity().getApplicationContext(), verbose, Toast.LENGTH_LONG).show();
-                Log.v(LOG_TAG, verbose);
-
-                long repeatMs = calculateRepeatMs(mRepeatSpinner.getSelectedItemPosition());
+                long delayMs = calculateRepeatMs(mRepeatSpinner.getSelectedItemPosition());
                 long activeMs = calculateActiveMs(mActiveSpinner.getSelectedItemPosition());
 
-                SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putInt(getString(R.string.REPEAT_TIME_NAME), mRepeatSpinner.getSelectedItemPosition());
-                editor.putInt(getString(R.string.ACTIVE_TIME_NAME), mActiveSpinner.getSelectedItemPosition());
-                editor.commit();
+                if ((delayMs - activeMs ) > 0) {
+                    String verbose = "WiFi will Toggle every " + REPEAT_TIMES[mRepeatSpinner.getSelectedItemPosition()] +
+                            " for " + ACTIVE_TIMES[mActiveSpinner.getSelectedItemPosition()];
+                    Toast.makeText(getActivity().getApplicationContext(), verbose, Toast.LENGTH_LONG).show();
+                    Log.v(LOG_TAG, verbose);
 
-                mListener.storeButtonClicked(repeatMs, activeMs);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putInt(getString(R.string.REPEAT_TIME_NAME), mRepeatSpinner.getSelectedItemPosition());
+                    editor.putInt(getString(R.string.ACTIVE_TIME_NAME), mActiveSpinner.getSelectedItemPosition());
+                    editor.commit();
+
+                    mListener.storeButtonClicked(delayMs, activeMs);
+                } else {
+                    Log.d(LOG_TAG, "Invalid arguments to service.. Quitting!");
+                    Toast.makeText(getActivity().getApplicationContext(), "Invalid Entry!", Toast.LENGTH_LONG).show();
+                    return;
+                }
             }
         });
 

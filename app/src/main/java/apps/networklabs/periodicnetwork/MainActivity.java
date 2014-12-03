@@ -95,14 +95,8 @@ public class MainActivity extends Activity implements MainFragment.MainFragmentB
             Log.v(LOG_TAG, "Delay in ms: " + delayMs);
             Log.v(LOG_TAG, "Active in ms: " + activeMs);
 
-            if ((delayMs - activeMs ) > 0) {
-                mOnTimer.scheduleAtFixedRate(mNetworkOnTimerTask, delayMs, delayMs);
-                mOffTimer.scheduleAtFixedRate(mNetworkOffTimerTask, delayMs + activeMs, delayMs);
-            } else {
-                Log.d(LOG_TAG, "Invalid arguments to service.. Quitting!");
-                Toast.makeText(getApplicationContext(), "Invalid Entry!", Toast.LENGTH_LONG).show();
-                stopSelf(startId);
-            }
+            mOnTimer.scheduleAtFixedRate(mNetworkOnTimerTask, delayMs, delayMs);
+            mOffTimer.scheduleAtFixedRate(mNetworkOffTimerTask, delayMs + activeMs, delayMs);
 
             return Service.START_REDELIVER_INTENT;
         }
@@ -134,7 +128,7 @@ public class MainActivity extends Activity implements MainFragment.MainFragmentB
         private Context mContext;
         private int mId = 1;
 
-        private static String LOG_TAG = "WiFiToggler";
+        private static String LOG_TAG = "NetworkToggler";
 
         public NetworkToggler(Context context, boolean toggle) {
             mContext = context;
@@ -146,17 +140,17 @@ public class MainActivity extends Activity implements MainFragment.MainFragmentB
             WifiManager wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
 
             if (mMode) {
-                //Turn WiFi On
-                Log.d(LOG_TAG, "Turning WiFi ON..");
+                //Turn Network On
+                Log.d(LOG_TAG, "Turning Network ON..");
                 wifiManager.setWifiEnabled(true);
                 setMobileDataEnabled(mContext, true);
-                sendNotification("WiFi Enabled");
+                sendNotification("Network Enabled");
             } else {
-                Log.d(LOG_TAG, "Turning WiFi OFF..");
-                //Turn WiFi Off
+                Log.d(LOG_TAG, "Turning Network OFF..");
+                //Turn Network Off
                 wifiManager.setWifiEnabled(false);
                 setMobileDataEnabled(mContext, false);
-                sendNotification("WiFi Disabled");
+                sendNotification("Network Disabled");
             }
         }
 
@@ -182,7 +176,7 @@ public class MainActivity extends Activity implements MainFragment.MainFragmentB
             PendingIntent pIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
 
             Notification n  = new Notification.Builder(mContext)
-                    .setContentTitle("PeriodicWiFi")
+                    .setContentTitle(mContext.getString(R.string.app_name))
                     .setContentText(text)
                     .setSmallIcon(R.drawable.ic_launcher)
                     .setContentIntent(pIntent).build();

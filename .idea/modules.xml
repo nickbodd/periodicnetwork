@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/PeriodicWiFi.iml" filepath="$PROJECT_DIR$/PeriodicWiFi.iml" />
+      <module fileurl="file://$PROJECT_DIR$/PeriodicNetwork.iml" filepath="$PROJECT_DIR$/PeriodicNetwork.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
     </modules>
   </component>
