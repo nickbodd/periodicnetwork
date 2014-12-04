@@ -41,6 +41,8 @@ public class MainActivity extends Activity implements MainFragment.MainFragmentB
 
     public void storeButtonClicked(long repeatMs, long activeMs) {
         Intent serviceIntent = new Intent(this, MainService.class);
+        stopService(serviceIntent);
+
         serviceIntent.putExtra(getString(R.string.REPEAT_TIME_NAME), repeatMs);
         serviceIntent.putExtra(getString(R.string.ACTIVE_TIME_NAME), activeMs);
 
@@ -115,11 +117,9 @@ public class MainActivity extends Activity implements MainFragment.MainFragmentB
         @Override
         public void onDestroy() {
             Log.v(LOG_TAG, "Service Destroy..");
-            super.onDestroy();
-            mNetworkOnTimerTask.cancel();
-            mNetworkOffTimerTask.cancel();
             mOnTimer.cancel();
             mOffTimer.cancel();
+            super.onDestroy();
         }
     }
 
