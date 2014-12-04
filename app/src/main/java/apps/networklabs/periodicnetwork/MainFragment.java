@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -26,6 +27,8 @@ public class MainFragment extends Fragment {
     };
     private Spinner mRepeatSpinner;
     private Spinner mActiveSpinner;
+    private CheckBox mWifiBox;
+    private CheckBox mDataBox;
 
     private static enum REPEAT_TIME_ENUM {
         ALARM_REPEAT_1_MINUTES ,
@@ -99,11 +102,19 @@ public class MainFragment extends Fragment {
         mActiveSpinner = (Spinner) getActivity().findViewById(R.id.activeTimeSpinner);
         mActiveSpinner.setAdapter(activeTimesAdapter);
 
+        mWifiBox = (CheckBox) getActivity().findViewById(R.id.wifiBox);
+        mDataBox = (CheckBox) getActivity().findViewById(R.id.dataBox);
+
         final SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
         int repeatTimeIndex = sharedPref.getInt(getString(R.string.REPEAT_TIME_NAME), 0);
         int activeTimeIndex = sharedPref.getInt(getString(R.string.ACTIVE_TIME_NAME), 0);
+        boolean wifi = sharedPref.getBoolean(getString(R.string.wifi), true);
+        boolean data = sharedPref.getBoolean(getString(R.string.mobile_data), true);
+
         mRepeatSpinner.setSelection(repeatTimeIndex);
         mActiveSpinner.setSelection(activeTimeIndex);
+        mWifiBox.setChecked(wifi);
+        mDataBox.setChecked(data);
 
         Button storeButton = (Button) getActivity().findViewById(R.id.store_button);
         storeButton.setOnClickListener(new View.OnClickListener() {
@@ -123,9 +134,16 @@ public class MainFragment extends Fragment {
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putInt(getString(R.string.REPEAT_TIME_NAME), mRepeatSpinner.getSelectedItemPosition());
                     editor.putInt(getString(R.string.ACTIVE_TIME_NAME), mActiveSpinner.getSelectedItemPosition());
+                    editor.putBoolean(getString(R.string.wifi), mWifiBox.isChecked());
+                    editor.putBoolean(getString(R.string.mobile_data), mDataBox.isChecked());
                     editor.commit();
+                    Log.d(LOG_TAG, "Wifi & Data: " + mWifiBox.isSelected() + " " +
+                                                     mDataBox.isSelected());
 
-                    mListener.storeButtonClicked(delayMs, activeMs);
+                    if (mWifiBox.isChecked() || mDataBox.isChecked())  {
+                        mListener.storeButtonClicked(delayMs, activeMs,
+                                mWifiBox.isChecked(), mDataBox.isChecked());
+                    }
                 } else {
                     Log.d(LOG_TAG, "Invalid arguments to service.. Quitting!");
                     Toast.makeText(getActivity().getApplicationContext(), "Invalid Entry!", Toast.LENGTH_LONG).show();
@@ -148,7 +166,7 @@ public class MainFragment extends Fragment {
     }
 
     public interface MainFragmentButtonsListener {
-        public void storeButtonClicked(long repeatMs, long activeMs);
+        public void storeButtonClicked(long repeatMs, long activeMs, boolean wifi, boolean data);
         public void releaseButtonClicked();
     }
 

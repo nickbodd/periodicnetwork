@@ -39,12 +39,14 @@ public class MainActivity extends Activity implements MainFragment.MainFragmentB
         }
     }
 
-    public void storeButtonClicked(long repeatMs, long activeMs) {
+    public void storeButtonClicked(long repeatMs, long activeMs, boolean wifi, boolean data) {
         Intent serviceIntent = new Intent(this, MainService.class);
         stopService(serviceIntent);
 
         serviceIntent.putExtra(getString(R.string.REPEAT_TIME_NAME), repeatMs);
         serviceIntent.putExtra(getString(R.string.ACTIVE_TIME_NAME), activeMs);
+        serviceIntent.putExtra(getString(R.string.wifi), wifi);
+        serviceIntent.putExtra(getString(R.string.mobile_data), data);
 
         startService(serviceIntent);
     }
@@ -93,6 +95,12 @@ public class MainActivity extends Activity implements MainFragment.MainFragmentB
 
             long delayMs  = intent.getLongExtra(getString(R.string.REPEAT_TIME_NAME), 0);
             long activeMs = intent.getLongExtra(getString(R.string.ACTIVE_TIME_NAME), 0);
+            boolean wifi = intent.getBooleanExtra(getString(R.string.wifi), true);
+            boolean data = intent.getBooleanExtra(getString(R.string.mobile_data), true);
+
+            mNetworkOnTimerTask = new NetworkToggler(getApplicationContext(), true, wifi, data);
+            mNetworkOffTimerTask = new NetworkToggler(getApplicationContext(), false, wifi, data);
+            mNetworkOffTimerTask.run();
 
             Log.v(LOG_TAG, "Delay in ms: " + delayMs);
             Log.v(LOG_TAG, "Active in ms: " + activeMs);
@@ -107,11 +115,8 @@ public class MainActivity extends Activity implements MainFragment.MainFragmentB
         public void onCreate() {
             Log.v(LOG_TAG, "Service Created..");
             super.onCreate();
-            mNetworkOnTimerTask = new NetworkToggler(getApplicationContext(), true);
-            mNetworkOffTimerTask = new NetworkToggler(getApplicationContext(), false);
             mOnTimer = new Timer("NetworkOnToggler");
             mOffTimer = new Timer("NetworkOffToggler");
-            mNetworkOffTimerTask.run();
         }
 
         @Override
@@ -125,32 +130,52 @@ public class MainActivity extends Activity implements MainFragment.MainFragmentB
 
     public static class NetworkToggler extends TimerTask {
         private boolean mMode = true;
+        private boolean mWifi = true;
+        private boolean mData =  true;
         private Context mContext;
         private int mId = 1;
 
         private static String LOG_TAG = "NetworkToggler";
 
-        public NetworkToggler(Context context, boolean toggle) {
+        public NetworkToggler(Context context, boolean toggle, boolean wifi, boolean data) {
             mContext = context;
             mMode = toggle;
+            mWifi = wifi;
+            mData = data;
         }
 
         @Override
         public void run() {
             WifiManager wifiManager = (WifiManager) mContext.getSystemService(Context.WIFI_SERVICE);
 
+            String verbose = "Turning Network OFF";
+            if (mMode) { verbose = "Turning Network ON"; }
+            Log.d(LOG_TAG, verbose);
+
+            if (mWifi) {
+                wifiManager.setWifiEnabled(mMode);
+            }
+
+            if (mData) {
+                setMobileDataEnabled(mContext, mMode);
+            }
+
             if (mMode) {
-                //Turn Network On
-                Log.d(LOG_TAG, "Turning Network ON..");
-                wifiManager.setWifiEnabled(true);
-                setMobileDataEnabled(mContext, true);
-                sendNotification("Network Enabled");
-            } else {
-                Log.d(LOG_TAG, "Turning Network OFF..");
-                //Turn Network Off
-                wifiManager.setWifiEnabled(false);
-                setMobileDataEnabled(mContext, false);
-                sendNotification("Network Disabled");
+                if (mWifi && mData) {
+                    sendNotification("WiFi & Data Enabled");
+                } else if (mWifi) {
+                    sendNotification("WiFi Enabled");
+                } else {
+                    sendNotification("Data Enabled");
+                }
+            } else  {
+                if (mWifi && mData) {
+                    sendNotification("WiFi & Data Disabled");
+                } else if (mWifi) {
+                    sendNotification("WiFi Disabled");
+                } else {
+                    sendNotification("Data Disabled");
+                }
             }
         }
 
