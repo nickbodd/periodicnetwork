@@ -54,6 +54,8 @@ public class MainActivity extends Activity implements MainFragment.MainFragmentB
     public void releaseButtonClicked() {
         Intent serviceIntent = new Intent(this, MainService.class);
         stopService(serviceIntent);
+        serviceIntent.putExtra(getString(R.string.NETWORK_ON), true);
+        startService(serviceIntent);
     }
 
     @Override
@@ -93,22 +95,31 @@ public class MainActivity extends Activity implements MainFragment.MainFragmentB
             Log.v(LOG_TAG, "Service Started..");
             super.onStartCommand(intent, flags, startId);
 
-            long delayMs  = intent.getLongExtra(getString(R.string.REPEAT_TIME_NAME), 0);
-            long activeMs = intent.getLongExtra(getString(R.string.ACTIVE_TIME_NAME), 0);
-            boolean wifi = intent.getBooleanExtra(getString(R.string.wifi), true);
-            boolean data = intent.getBooleanExtra(getString(R.string.mobile_data), true);
+            boolean networkOn = intent.getBooleanExtra(getString(R.string.NETWORK_ON), false);
+            if (false == networkOn) {
 
-            mNetworkOnTimerTask = new NetworkToggler(getApplicationContext(), true, wifi, data);
-            mNetworkOffTimerTask = new NetworkToggler(getApplicationContext(), false, wifi, data);
-            mNetworkOffTimerTask.run();
+                long delayMs = intent.getLongExtra(getString(R.string.REPEAT_TIME_NAME), 0);
+                long activeMs = intent.getLongExtra(getString(R.string.ACTIVE_TIME_NAME), 0);
+                boolean wifi = intent.getBooleanExtra(getString(R.string.wifi), true);
+                boolean data = intent.getBooleanExtra(getString(R.string.mobile_data), true);
 
-            Log.v(LOG_TAG, "Delay in ms: " + delayMs);
-            Log.v(LOG_TAG, "Active in ms: " + activeMs);
+                mNetworkOnTimerTask = new NetworkToggler(getApplicationContext(), true, wifi, data);
+                mNetworkOffTimerTask = new NetworkToggler(getApplicationContext(), false, wifi, data);
+                mNetworkOffTimerTask.run();
 
-            mOnTimer.scheduleAtFixedRate(mNetworkOnTimerTask, delayMs, delayMs);
-            mOffTimer.scheduleAtFixedRate(mNetworkOffTimerTask, delayMs + activeMs, delayMs);
+                Log.v(LOG_TAG, "Delay in ms: " + delayMs);
+                Log.v(LOG_TAG, "Active in ms: " + activeMs);
 
-            return Service.START_REDELIVER_INTENT;
+                mOnTimer.scheduleAtFixedRate(mNetworkOnTimerTask, delayMs, delayMs);
+                mOffTimer.scheduleAtFixedRate(mNetworkOffTimerTask, delayMs + activeMs, delayMs);
+
+                return Service.START_REDELIVER_INTENT;
+            } else {
+                Log.v(LOG_TAG, "Turning ON before quitting..");
+                new NetworkToggler(getApplicationContext(), true, true, true).run();
+                stopSelf();
+                return  Service.START_NOT_STICKY;
+            }
         }
 
         @Override
